@@ -1,0 +1,2 @@
+# terraform-drift-detector uses only Python 3.8+ stdlib.
+# Optional: gh CLI on PATH if you want --create-pr to open PRs.

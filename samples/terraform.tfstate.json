@@ -1,0 +1,76 @@
+{
+  "format_version": "1.0",
+  "terraform_version": "1.6.4",
+  "values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_iam_role.app_runtime",
+          "type": "aws_iam_role",
+          "name": "app_runtime",
+          "values": {
+            "name": "app-runtime",
+            "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+            "managed_policy_arns": ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
+          }
+        },
+        {
+          "address": "aws_iam_policy.app_runtime",
+          "type": "aws_iam_policy",
+          "name": "app_runtime",
+          "values": {
+            "name": "app-runtime-policy",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"s3:GetObject\"],\"Resource\":\"arn:aws:s3:::artifacts/*\"}]}"
+          }
+        },
+        {
+          "address": "aws_iam_account_password_policy.this",
+          "type": "aws_iam_account_password_policy",
+          "name": "this",
+          "values": {
+            "minimum_password_length": 16,
+            "password_reuse_prevention": 24,
+            "require_numbers": true,
+            "require_symbols": true
+          }
+        },
+        {
+          "address": "aws_security_group.web",
+          "type": "aws_security_group",
+          "name": "web",
+          "values": {
+            "name": "web-public",
+            "vpc_id": "vpc-1",
+            "ingress": [
+              {"from_port": 443, "to_port": 443, "protocol": "tcp", "cidr_blocks": ["0.0.0.0/0"]}
+            ],
+            "egress": [
+              {"from_port": 0, "to_port": 0, "protocol": "-1", "cidr_blocks": ["0.0.0.0/0"]}
+            ]
+          }
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.app_data",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "app_data",
+          "values": {
+            "bucket": "app-data-prod",
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "ignore_public_acls": true,
+            "restrict_public_buckets": true
+          }
+        },
+        {
+          "address": "aws_vpc_endpoint.s3",
+          "type": "aws_vpc_endpoint",
+          "name": "s3",
+          "values": {
+            "vpc_id": "vpc-1",
+            "service_name": "com.amazonaws.us-east-1.s3"
+          }
+        }
+      ]
+    }
+  }
+}

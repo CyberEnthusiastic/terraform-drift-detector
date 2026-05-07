@@ -1,0 +1,86 @@
+{
+  "aws_iam_role": {
+    "aws_iam_role.app_runtime": {
+      "name": "app-runtime",
+      "assume_role_policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {"Effect": "Allow", "Principal": {"Service": "ec2.amazonaws.com"}, "Action": "sts:AssumeRole"},
+          {"Effect": "Allow", "Principal": {"AWS": "arn:aws:iam::999999999999:root"}, "Action": "sts:AssumeRole"}
+        ]
+      },
+      "managed_policy_arns": ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
+    }
+  },
+  "aws_iam_policy": {
+    "aws_iam_policy.app_runtime": {
+      "name": "app-runtime-policy",
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {"Effect": "Allow", "Action": "*", "Resource": "*"}
+        ]
+      }
+    }
+  },
+  "aws_iam_role_policy_attachment": {
+    "aws_iam_role_policy_attachment.console_added_admin": {
+      "role": "app-runtime",
+      "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess"
+    }
+  },
+  "aws_iam_account_password_policy": {
+    "aws_iam_account_password_policy.this": {
+      "minimum_password_length": 8,
+      "password_reuse_prevention": 0,
+      "require_numbers": true,
+      "require_symbols": false
+    }
+  },
+  "aws_security_group_rule": {
+    "aws_security_group_rule.console_added_ssh": {
+      "type": "ingress",
+      "protocol": "tcp",
+      "from_port": 22,
+      "to_port": 22,
+      "cidr_blocks": ["0.0.0.0/0"],
+      "security_group_id": "sg-aaa1"
+    },
+    "aws_security_group_rule.console_added_rdp": {
+      "type": "ingress",
+      "protocol": "tcp",
+      "from_port": 3389,
+      "to_port": 3389,
+      "cidr_blocks": ["0.0.0.0/0"],
+      "security_group_id": "sg-aaa1"
+    }
+  },
+  "aws_s3_bucket_public_access_block": {
+    "aws_s3_bucket_public_access_block.app_data": {
+      "bucket": "app-data-prod",
+      "block_public_acls": false,
+      "block_public_policy": true,
+      "ignore_public_acls": true,
+      "restrict_public_buckets": true
+    }
+  },
+  "aws_route": {
+    "aws_route.private_to_igw": {
+      "route_table_id": "rtb-private",
+      "destination_cidr_block": "0.0.0.0/0",
+      "gateway_id": "igw-abc"
+    }
+  },
+  "aws_security_group": {
+    "aws_security_group.web": {
+      "name": "web-public",
+      "vpc_id": "vpc-1",
+      "ingress": [
+        {"from_port": 443, "to_port": 443, "protocol": "tcp", "cidr_blocks": ["0.0.0.0/0"]}
+      ],
+      "egress": [
+        {"from_port": 0, "to_port": 0, "protocol": "-1", "cidr_blocks": ["0.0.0.0/0"]}
+      ]
+    }
+  }
+}
